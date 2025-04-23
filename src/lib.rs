@@ -30,3 +30,22 @@ mod tests {
 pub fn type_of<T>(_: &T) -> &'static str {
     std::any::type_name::<T>()
 }
+
+/// Checks whether the Esc key was pressed
+pub fn esc_key_pressed() -> bool {
+    use crossterm::event::{self, Event, KeyCode};
+
+    // poll(0) means it returns immediately with event availability information
+    // using while instead of if to clear the pending events are processed (if many keys are pressed between ticks).
+    while event::poll(std::time::Duration::from_millis(0)).unwrap() {
+        match event::read().unwrap() {
+            Event::Key(key_event) => {
+                if key_event.code == KeyCode::Esc {
+                    return true;
+                }
+            },
+            _ => (),
+        };
+    }
+    false
+}
